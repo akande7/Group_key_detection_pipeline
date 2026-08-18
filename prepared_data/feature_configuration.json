@@ -1,0 +1,81 @@
+{
+    "metadata_columns": [
+        "window_number",
+        "window_start_seconds",
+        "window_end_seconds"
+    ],
+    "original_l2_features": [
+        "dot11_frame_count",
+        "management_frame_count",
+        "control_frame_count",
+        "data_frame_count",
+        "beacon_count",
+        "broadcast_mac_count",
+        "multicast_mac_count",
+        "unicast_mac_count",
+        "eapol_count",
+        "protected_frame_count",
+        "total_packet_bytes",
+        "average_packet_size",
+        "packet_rate_per_second",
+        "broadcast_mac_ratio",
+        "unicast_mac_ratio"
+    ],
+    "original_cross_layer_features": [
+        "ip_count",
+        "arp_count",
+        "broadcast_mac_broadcast_ip_count",
+        "broadcast_mac_multicast_ip_count",
+        "cross_layer_inconsistency_count",
+        "cross_layer_inconsistency_ratio"
+    ],
+    "mandatory_features_retained": [
+        "arp_count",
+        "cross_layer_inconsistency_count",
+        "cross_layer_inconsistency_ratio"
+    ],
+    "constant_features_removed": [
+        "control_frame_count",
+        "broadcast_mac_multicast_ip_count"
+    ],
+    "selected_l2_features": [
+        "dot11_frame_count",
+        "management_frame_count",
+        "data_frame_count",
+        "beacon_count",
+        "broadcast_mac_count",
+        "multicast_mac_count",
+        "unicast_mac_count",
+        "eapol_count",
+        "protected_frame_count",
+        "total_packet_bytes",
+        "average_packet_size",
+        "packet_rate_per_second",
+        "broadcast_mac_ratio",
+        "unicast_mac_ratio"
+    ],
+    "selected_cross_layer_features": [
+        "dot11_frame_count",
+        "management_frame_count",
+        "data_frame_count",
+        "beacon_count",
+        "broadcast_mac_count",
+        "multicast_mac_count",
+        "unicast_mac_count",
+        "eapol_count",
+        "protected_frame_count",
+        "total_packet_bytes",
+        "average_packet_size",
+        "packet_rate_per_second",
+        "broadcast_mac_ratio",
+        "unicast_mac_ratio",
+        "ip_count",
+        "arp_count",
+        "broadcast_mac_broadcast_ip_count",
+        "cross_layer_inconsistency_count",
+        "cross_layer_inconsistency_ratio"
+    ],
+    "normal_observations": 289,
+    "attack_observations": 0,
+    "attack_dataset_loaded": false
+}
