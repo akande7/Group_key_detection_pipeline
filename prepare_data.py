@@ -52,10 +52,6 @@ CROSS_LAYER_FEATURES = [
     "cross_layer_inconsistency_ratio",
 ]
 
-
-# These features must be retained even if they are constant in normal traffic.
-# Their normal value may legitimately be zero, but they may become non-zero
-# during GTK abuse.
 MANDATORY_FEATURES = [
     "arp_count",
     "cross_layer_inconsistency_count",

@@ -28,8 +28,6 @@ CONTAMINATION = "auto"
 
 
 def load_feature_configuration(path: Path) -> dict:
-    """Load the feature selection metadata produced by prepare_data.py."""
-
     if not path.exists():
         raise FileNotFoundError(
             "Feature configuration not found. "
@@ -41,8 +39,6 @@ def load_feature_configuration(path: Path) -> dict:
 
 
 def load_training_features(path: Path, feature_columns: list[str]) -> pd.DataFrame:
-    """Load a model-ready feature matrix and validate its columns."""
-
     if not path.exists():
         raise FileNotFoundError(f"Training dataset not found: {path}")
 
@@ -67,13 +63,6 @@ def load_training_features(path: Path, feature_columns: list[str]) -> pd.DataFra
 
 
 def build_anomaly_detector() -> Pipeline:
-    """
-    Build an unsupervised anomaly detector for normal-only traffic.
-
-    The model learns the distribution of legitimate Wi-Fi behaviour and
-    flags windows that deviate from that baseline during inference.
-    """
-
     return Pipeline(
         steps=[
             ("scaler", StandardScaler()),

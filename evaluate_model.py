@@ -1,16 +1,3 @@
-"""
-Evaluate all three detection approaches (rule-based baseline, L2-only
-Isolation Forest, cross-layer Isolation Forest) against:
-
-  - a held-out normal session the models never trained on (false-positive
-    rate check), and
-  - the attack capture (detection / true-positive rate check).
-
-This script assumes prepare_data.py and train_model.py have already been
-run, producing prepared_data/feature_configuration.json and the two
-trained model files in models/.
-"""
-
 from __future__ import annotations
 
 import json
@@ -61,8 +48,6 @@ def clean_numeric_features(
     dataframe: pd.DataFrame,
     feature_columns: list[str],
 ) -> pd.DataFrame:
-    """Mirror the cleaning applied in prepare_data.py so evaluation data
-    is treated consistently with training data."""
     cleaned = dataframe.copy()
     for column in feature_columns:
         cleaned[column] = pd.to_numeric(cleaned[column], errors="coerce")
@@ -86,22 +71,10 @@ def load_raw_dataset(path: Path, required_columns: list[str]) -> pd.DataFrame:
 
 
 def rule_based_predict(dataframe: pd.DataFrame) -> pd.Series:
-    """
-    Simple rule-based baseline: flag any window containing at least one
-    cross-layer inconsistency (broadcast MAC destination paired with a
-    unicast IP destination), the signature associated with GTK abuse.
-
-    Returns a boolean Series: True = flagged as anomalous.
-    """
     return dataframe["cross_layer_inconsistency_count"] > 0
 
 
 def isolation_forest_predict(model, dataframe: pd.DataFrame, feature_columns: list[str]) -> pd.Series:
-    """
-    Returns a boolean Series: True = flagged as anomalous.
-    scikit-learn's IsolationForest.predict() returns 1 for normal, -1
-    for anomaly.
-    """
     predictions = model.predict(dataframe[feature_columns])
     return pd.Series(predictions == -1, index=dataframe.index)
 
@@ -204,10 +177,6 @@ def main() -> None:
     attack = load_raw_dataset(ATTACK_FILE, all_required_columns)
     attack = clean_numeric_features(attack, all_required_columns)
 
-    # Ground truth: windows where the injected attack signature is
-    # actually present, derived directly from the raw cross-layer
-    # inconsistency count rather than hard-coded, so this stays correct
-    # if the attack capture is regenerated.
     known_attack_windows = set(
         int(w)
         for w in attack.loc[

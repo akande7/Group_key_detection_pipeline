@@ -1,22 +1,3 @@
-"""
-Feature extraction for GTK abuse detection (v2).
-
-Uses THREE logical input sources, two files:
-  - RAW_PCAP_FILE: the original, encrypted 802.11 capture (RadioTap/Dot11
-    headers intact). Used for:
-      (a) all Layer 2 / traffic-behaviour features, and
-      (b) any already-unprotected (plaintext) data frames present in the
-          raw capture -- this covers injected/simulated attack frames,
-          which are unencrypted by construction and therefore never pass
-          through airdecap-ng's station-tracking logic.
-  - DECRYPTED_PCAP_FILE: the airdecap-ng output for the SAME capture
-    (Ethernet-encapsulated, decrypted payloads of REAL client traffic).
-    Used for IP/ARP-layer features arising from genuine encrypted client
-    sessions that airdecap-ng successfully decrypted.
-
-Both IP-layer sources are merged into the same per-window counters.
-"""
-
 from collections import defaultdict
 from ipaddress import IPv4Address, IPv4Network
 
@@ -105,12 +86,6 @@ def empty_window() -> dict:
 
 
 windows = defaultdict(empty_window)
-
-
-# ---------------------------------------------------------------------------
-# PASS 1: raw capture -> L2 features, AND plaintext (unprotected) IP frames
-# ---------------------------------------------------------------------------
-
 first_timestamp = None
 
 with PcapReader(RAW_PCAP_FILE) as packets:
@@ -160,14 +135,7 @@ with PcapReader(RAW_PCAP_FILE) as packets:
         if packet.haslayer(EAPOL):
             window["eapol_count"] += 1
 
-        # -------------------------------------------------------------
-        # Handle already-unprotected data frames directly here. These
-        # are frames that were never encrypted in the first place (e.g.
-        # injected/simulated attack frames), so airdecap-ng has no
-        # ciphertext to decrypt and may not carry them through to its
-        # output. We classify their IP layer directly from the raw
-        # capture instead of relying on the decrypted file for these.
-        # -------------------------------------------------------------
+
         if not protected and dot11.type == 2:
             if packet.haslayer(ARP):
                 window["arp_count"] += 1
@@ -189,11 +157,6 @@ with PcapReader(RAW_PCAP_FILE) as packets:
                     elif ip_destination_type == "unicast":
                         window["cross_layer_inconsistency_count"] += 1
 
-
-# ---------------------------------------------------------------------------
-# PASS 2: airdecap-ng output -> IP features for genuinely decrypted
-# (real, encrypted-at-capture-time) client traffic only.
-# ---------------------------------------------------------------------------
 
 decrypted_first_timestamp = None
 
@@ -234,11 +197,6 @@ with PcapReader(DECRYPTED_PCAP_FILE) as packets:
                 window["broadcast_mac_multicast_ip_count"] += 1
             elif ip_destination_type == "unicast":
                 window["cross_layer_inconsistency_count"] += 1
-
-
-# ---------------------------------------------------------------------------
-# Aggregate and export
-# ---------------------------------------------------------------------------
 
 rows = []
 
